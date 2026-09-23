@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# ===== Top Border =====
+echo -e "\033[90;1m============================================================\033[0m"
+echo -e "\033[34;1m| Welcome Back \033[32m$(whoami)\033[34;1m!                                      |\033[0m"
+echo -e "\033[90;1m------------------------------------------------------------\033[0m"
+
+# ===== Storage Usage =====
+echo -e "\033[33;1m| Storage usage:\033[0m"
+
+HEADER=$(df -h | grep 'Filesystem')
+USERLINE=$(df -h | grep $USER)
+
+echo -e "\033[36m| $HEADER\033[0m"
+echo -e "\033[35m| $USERLINE\033[0m"
+
+echo -e "\033[90;1m------------------------------------------------------------\033[0m"
+
+# ===== Last Logins =====
+LOGINS=$(last | grep $(whoami) | head -n 3)
+
+if [ -n "$LOGINS" ]; then
+    echo -e "\033[33;1m| Last logins:\033[0m"
+
+    IFS=$'\n'
+    for LINE in $LOGINS; do
+        USERNAME=$(echo "$LINE" | awk '{print $1}')
+        TTY=$(echo "$LINE" | awk '{print $2}')
+        IP=$(echo "$LINE" | awk '{print $3}')
+        REST=$(echo "$LINE" | cut -d' ' -f4-)
+
+        # Pad fields to fixed widths
+        USERPAD=$(printf "%-8s" "$USERNAME")
+        TTYPAD=$(printf "%-8s" "$TTY")
+        IPPAD=$(printf "%-15s" "$IP")
+
+        echo -e "\033[95m| \033[32m$USERPAD\033[95m \033[35m$TTYPAD\033[95m \033[36m$IPPAD\033[95m $REST\033[0m"
+    done
+fi
+
+# ===== Bottom Border =====
+echo -e "\033[90;1m------------------------------------------------------------\033[0m"
+echo -e "\033[32;1m| So... what are we up to today?                          |\033[0m"
+echo -e "\033[90;1m============================================================\033[0m"
